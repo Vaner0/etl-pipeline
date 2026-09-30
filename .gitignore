@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.py[cod]
+.env
+copilot.md
+DOCUMENTATION.md
+Projet3_Cahier_des_charges_v3.md
