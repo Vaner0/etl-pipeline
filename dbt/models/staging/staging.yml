@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: stg_weather_cotonou
+    description: Couche de staging nettoyée des observations météo horaires de Cotonou.
+    columns:
+      - name: observed_at
+        description: Horodatage de l'observation, avec fuseau horaire.
+        data_tests:
+          - unique
+          - not_null
+      - name: observed_at_local
+        description: Heure locale de l'observation à Cotonou.
+        data_tests:
+          - not_null

@@ -1,3 +1,5 @@
 python-dotenv>=1.0,<2.0
 psycopg[binary]>=3.2,<4.0
 requests>=2.32,<3.0
+dbt-core>=1.12,<1.13
+dbt-postgres>=1.11,<1.12

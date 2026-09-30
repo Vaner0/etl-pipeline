@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: mart_weather_cotonou_monthly
+    description: Indicateurs météo mensuels de Cotonou, agrégeant les statistiques journalières.
+    columns:
+      - name: month
+        description: Premier jour du mois civil local.
+        data_tests:
+          - unique
+          - not_null
+      - name: observation_count
+        data_tests:
+          - not_null

@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: int_weather_cotonou_daily
+    description: Agrégats journaliers calculés à partir des observations horaires locales.
+    columns:
+      - name: observation_date
+        description: Jour civil local à Cotonou.
+        data_tests:
+          - unique
+          - not_null
+      - name: total_precipitation
+        data_tests:
+          - not_null
+      - name: observation_count
+        data_tests:
+          - not_null

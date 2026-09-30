@@ -1,4 +1,4 @@
-"""Fetch the previous day's hourly weather for Cotonou and upsert it to Neon."""
+"""Fetch the previous day's hourly weather for Cotonou and upsert it to PostgreSQL."""
 
 from __future__ import annotations
 

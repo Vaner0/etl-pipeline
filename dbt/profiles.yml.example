@@ -1,0 +1,15 @@
+weather_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_HOST') }}"
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      port: "{{ env_var('DBT_PORT') | int }}"
+      dbname: "{{ env_var('DBT_DATABASE') }}"
+      schema: dbt
+      threads: 4
+      connect_timeout: 15
+      retries: 3
+      sslmode: "{{ env_var('DBT_SSLMODE') }}"

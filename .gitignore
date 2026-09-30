@@ -5,3 +5,8 @@ __pycache__/
 copilot.md
 DOCUMENTATION.md
 Projet3_Cahier_des_charges_v3.md
+dbt/profiles.yml
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml

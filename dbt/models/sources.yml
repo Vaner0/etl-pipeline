@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: weather
+    description: Données météo horaires extraites de l'API archive Open-Meteo.
+    schema: etl_pipeline
+    tables:
+      - name: staging_weather_cotonou
+        description: Données météo chargées de façon idempotente par le script Python.
+        columns:
+          - name: observed_at
+            description: Horodatage de l'observation, avec fuseau horaire.
+            data_tests:
+              - unique
+              - not_null
