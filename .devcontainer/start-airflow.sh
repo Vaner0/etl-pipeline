@@ -2,6 +2,7 @@
 set -euo pipefail
 
 AIRFLOW_BIN="${PWD}/.venv-airflow/bin/airflow"
+export PATH="${PWD}/.venv-airflow/bin:${PATH}"
 PID_FILE="/tmp/etl-pipeline-airflow.pid"
 LOG_FILE="${AIRFLOW_HOME}/standalone.log"
 
@@ -13,8 +14,13 @@ fi
 if [[ -f "${PID_FILE}" ]]; then
   PID="$(cat "${PID_FILE}")"
   if kill -0 "${PID}" 2>/dev/null && ps -p "${PID}" -o args= | grep -Fq "${AIRFLOW_BIN} standalone"; then
-    echo "Airflow standalone est déjà en cours."
-    exit 0
+    if curl --fail --silent --show-error http://127.0.0.1:8080/api/v2/version >/dev/null 2>&1; then
+      echo "Airflow standalone est déjà en cours."
+      exit 0
+    fi
+    echo "Le processus Airflow existe (PID ${PID}), mais l'API ne répond pas sur le port 8080."
+    echo "Arrêtez ce processus avec 'kill ${PID}', puis relancez ce script."
+    exit 1
   fi
   rm -f "${PID_FILE}"
 fi
@@ -27,7 +33,7 @@ for _ in $(seq 1 90); do
     echo "Airflow s'est arrêté pendant son démarrage. Consultez le journal local du Codespace."
     exit 1
   fi
-  if python3 -c "import socket; socket.create_connection(('127.0.0.1', 8080), timeout=1).close()" 2>/dev/null; then
+  if curl --fail --silent --show-error http://127.0.0.1:8080/api/v2/version >/dev/null 2>&1; then
     echo "Airflow est disponible sur le port 8080. Les identifiants de démonstration sont dans le journal local du Codespace."
     exit 0
   fi
