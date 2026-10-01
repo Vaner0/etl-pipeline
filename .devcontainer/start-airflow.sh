@@ -3,6 +3,9 @@ set -euo pipefail
 
 AIRFLOW_BIN="${PWD}/.venv-airflow/bin/airflow"
 export PATH="${PWD}/.venv-airflow/bin:${PATH}"
+if [[ -n "${CODESPACE_NAME:-}" && -n "${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-}" ]]; then
+  export AIRFLOW__API__BASE_URL="https://${CODESPACE_NAME}-8080.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+fi
 PID_FILE="/tmp/etl-pipeline-airflow.pid"
 LOG_FILE="${AIRFLOW_HOME}/standalone.log"
 
