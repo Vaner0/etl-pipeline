@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "generated_at": "2026-10-04T18:20:03.878322+00:00",
+    "source": "dbt_marts.mart_weather_cotonou_monthly",
+    "dataset": "Open-Meteo Archive API — Cotonou, Bénin",
+    "note": "Les agrégats mensuels sont partiels : ils ne couvrent que les journées présentes dans la table source au moment de l'export."
+  },
+  "months": [
+    {
+      "month": "2026-09-01",
+      "avg_temperature_2m": 25.874999999999996,
+      "min_temperature_2m": 25.1,
+      "max_temperature_2m": 26.7,
+      "avg_relative_humidity_2m": 84.25,
+      "total_precipitation": 4.5,
+      "rainy_days": 1,
+      "rainy_hours": 10,
+      "observation_count": 24
+    },
+    {
+      "month": "2026-10-01",
+      "avg_temperature_2m": 27.36666666666667,
+      "min_temperature_2m": 25.7,
+      "max_temperature_2m": 30.5,
+      "avg_relative_humidity_2m": 75.20833333333333,
+      "total_precipitation": 1.6,
+      "rainy_days": 1,
+      "rainy_hours": 5,
+      "observation_count": 24
+    }
+  ]
+}

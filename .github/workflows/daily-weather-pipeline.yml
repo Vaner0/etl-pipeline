@@ -1,0 +1,73 @@
+name: Daily weather pipeline
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  run-pipeline:
+    name: Extract weather and build dbt marts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Verify database secret is configured
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "${DATABASE_URL}" ]; then
+            echo "::error::Add the Neon connection string as the DATABASE_URL repository secret before running this workflow."
+            exit 1
+          fi
+
+      - name: Extract and load yesterday's weather
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ETL_SCHEMA: etl_pipeline
+        run: python extraction/extract_weather_cotonou.py
+
+      - name: Build dbt models and run data tests
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python scripts/run_dbt.py build
+
+      - name: Export mart for the portfolio dashboard
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python scripts/export_portfolio_data.py
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload dashboard
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Publish dashboard
+        id: deployment
+        uses: actions/deploy-pages@v4
