@@ -100,7 +100,7 @@ Le service Render gratuit peut se mettre en veille après une période d’inact
 
 ### Exécution quotidienne
 
-Le workflow `.github/workflows/daily-weather-pipeline.yml` est planifié à 06:00 UTC et peut également être lancé manuellement. Avant son premier succès, définir dans les paramètres GitHub **Settings → Secrets and variables → Actions** le secret de dépôt `DATABASE_URL` avec une chaîne PostgreSQL valide pour Neon. Le workflow échoue clairement si ce secret manque ; il ne retombe pas silencieusement sur une base locale. Après l’extraction et le build dbt, il exporte un instantané de secours et republie le tableau de bord. L’API Render lit directement dans Neon le mart ainsi actualisé.
+Le workflow `.github/workflows/daily-weather-pipeline.yml` est planifié à 06:00 UTC et peut également être lancé manuellement. Le secret de dépôt `DATABASE_URL` est configuré dans GitHub Actions ; le workflow échoue clairement s’il manque et ne retombe pas silencieusement sur une base locale. La première exécution manuelle a réussi le 5 octobre 2026 : extraction et chargement dans Neon, build et tests dbt, export d’un instantané de secours et republication du tableau de bord. L’API Render lit directement dans Neon le mart ainsi actualisé.
 
 ### Démo Airflow
 
@@ -113,8 +113,8 @@ Le Codespace est réservé à la démonstration de l’orchestration ; il ne rem
 - ✅ Tableau de bord interactif publié, API FastAPI déployée sur Render et connectée à Neon ; API, affichage live et instantané de secours vérifiés.
 - ✅ Workflows CI, publication Pages et pipeline quotidien définis dans le dépôt.
 - ✅ GitHub Pages activé et site public vérifié ; CI et workflow de publication réussis sur `master`.
-- ✅ Secret `DATABASE_URL` configuré sur Render ; le secret GitHub Actions reste à configurer pour activer le pipeline quotidien.
-- ⏳ Configurer le secret GitHub Actions `DATABASE_URL` et valider une exécution complète du pipeline quotidien.
+- ✅ Secrets `DATABASE_URL` configurés sur Render et GitHub Actions ; première exécution complète du pipeline quotidien réussie.
+- ✅ Pipeline quotidien planifié et tableau de bord republie après l’exécution.
 - ⏳ Démarrer ensuite l’extension BigQuery / NYC Taxi prévue au cahier des charges.
 
 ## Sources
