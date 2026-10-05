@@ -1,12 +1,14 @@
 # Pipeline météo ETL/ELT — Cotonou
 
-Démo portfolio d’un pipeline de données complet : extraction de la météo horaire via Open-Meteo, chargement idempotent dans PostgreSQL, transformations dbt et tests de qualité.
+Projet de pipeline de données complet : extraction de la météo horaire via Open-Meteo, chargement idempotent dans PostgreSQL, transformations dbt et tests de qualité.
 
-**Démo interactive (URL après activation de GitHub Pages) :** [https://vaner0.github.io/etl-pipeline/](https://vaner0.github.io/etl-pipeline/)
+**Tableau de bord interactif :** [https://vaner0.github.io/etl-pipeline/](https://vaner0.github.io/etl-pipeline/)
+
+**API météo en lecture seule :** [https://etl-pipeline-weather-api.onrender.com/api/weather/monthly](https://etl-pipeline-weather-api.onrender.com/api/weather/monthly)
 
 **Code source :** [Vaner0/etl-pipeline](https://github.com/Vaner0/etl-pipeline)
 
-> Le tableau de bord est interactif et interroge une API en lecture seule hébergée sur Render, connectée à Neon. Le navigateur n’accède jamais directement à la base. Le pipeline met les données à jour chaque jour ; en cas d’indisponibilité de l’API, la démo peut afficher le dernier instantané publié. L’API, Neon et GitHub Pages restent à déployer/configurer avant que le lien public soit opérationnel.
+> Le tableau de bord public interroge l’API en lecture seule hébergée sur Render, connectée à Neon. Le navigateur n’accède jamais directement à la base. En cas d’indisponibilité de l’API, le site affiche le dernier instantané publié. L’exécution quotidienne GitHub Actions nécessite encore la configuration du secret `DATABASE_URL`.
 
 ## Architecture
 
@@ -34,7 +36,7 @@ Tableau de bord interactif (GitHub Pages)
 - **Orchestration de démonstration :** Airflow dans GitHub Codespaces, `dags/weather_cotonou_etl.py`
 - **Exécution planifiée :** GitHub Actions, chaque jour à 06:00 UTC (07:00 à Cotonou)
 - **API publique en lecture seule :** `api/main.py`, hébergée sur Render, avec CORS limité
-- **Restitution :** `site/`, publiée sur GitHub Pages après activation de Pages dans les paramètres du dépôt
+- **Restitution :** `site/`, publiée sur GitHub Pages à chaque changement de la branche `master`
 
 ## Résultats vérifiés
 
@@ -90,9 +92,9 @@ Prérequis : Python 3.12 et PostgreSQL accessible.
 
 ### Tableau de bord GitHub Pages et API Render
 
-Le workflow `.github/workflows/pages.yml` publie le contenu de `site/` sur les changements de `master` ou `main`. Dans **Settings → Pages**, choisir **GitHub Actions** comme source. Après fusion du code sur la branche par défaut et réussite du workflow, l’URL sera `https://vaner0.github.io/etl-pipeline/`.
+Le workflow `.github/workflows/pages.yml` publie le contenu de `site/` sur les changements de `master` ou `main`. GitHub Pages est activé avec **GitHub Actions** comme source ; le site est publié à `https://vaner0.github.io/etl-pipeline/`.
 
-Créer le service Render à partir du `render.yaml` à la racine du dépôt. Ajouter le secret `DATABASE_URL` avec la chaîne Neon, puis déployer. Une fois l’URL `onrender.com` connue, la renseigner dans `site/config.js` (`window.WEATHER_API_BASE_URL`) et publier le site. L’API est en lecture seule, limite CORS à l’origine du tableau de bord, et ne renvoie pas la chaîne de connexion. La route `/health` sert au contrôle de disponibilité ; `/api/weather/monthly` renvoie les données.
+L’API `etl-pipeline-weather-api` est déployée sur Render depuis le `render.yaml` et lit le mart dans Neon. Son URL est configurée dans `site/config.js` (`window.WEATHER_API_BASE_URL`). L’API est en lecture seule, limite CORS à l’origine du tableau de bord et ne renvoie pas la chaîne de connexion. La route `/health` sert au contrôle de disponibilité ; `/api/weather/monthly` renvoie les données. Le parcours public tableau de bord → API Render → Neon a été vérifié le 5 octobre 2026.
 
 Le service Render gratuit peut se mettre en veille après une période d’inactivité ; le premier appel peut donc être plus lent. Le tableau de bord bascule alors explicitement sur l’instantané publié, sans le présenter comme une réponse de l’API.
 
@@ -108,11 +110,11 @@ Le Codespace est réservé à la démonstration de l’orchestration ; il ne rem
 
 - ✅ Extraction réelle vers PostgreSQL local, relançable sans doublons.
 - ✅ Modèles staging / intermédiaire journalier / mart mensuel ; 13 tests dbt validés localement.
-- ✅ Tableau de bord interactif, API FastAPI en lecture seule et instantané de secours définis ; validation locale API et déploiements Render/GitHub Pages à effectuer.
+- ✅ Tableau de bord interactif publié, API FastAPI déployée sur Render et connectée à Neon ; API, affichage live et instantané de secours vérifiés.
 - ✅ Workflows CI, publication Pages et pipeline quotidien définis dans le dépôt.
-- ✅ Neon : connexion validée depuis Codespaces ; le secret GitHub Actions et le secret Render restent à configurer.
-- ⏳ Déployer l’API Render, ajouter son URL dans `site/config.js`, activer GitHub Pages et vérifier les URL publiques.
-- ⏳ Activer GitHub Pages, fusionner les workflows sur la branche par défaut et vérifier les URL publiées.
+- ✅ GitHub Pages activé et site public vérifié ; CI et workflow de publication réussis sur `master`.
+- ✅ Secret `DATABASE_URL` configuré sur Render ; le secret GitHub Actions reste à configurer pour activer le pipeline quotidien.
+- ⏳ Configurer le secret GitHub Actions `DATABASE_URL` et valider une exécution complète du pipeline quotidien.
 - ⏳ Démarrer ensuite l’extension BigQuery / NYC Taxi prévue au cahier des charges.
 
 ## Sources
