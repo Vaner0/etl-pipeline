@@ -8,7 +8,7 @@ Projet de pipeline de données complet : extraction de la météo horaire via Op
 
 **Code source :** [Vaner0/etl-pipeline](https://github.com/Vaner0/etl-pipeline)
 
-> Le tableau de bord public interroge l’API en lecture seule hébergée sur Render, connectée à Neon. Le navigateur n’accède jamais directement à la base. En cas d’indisponibilité de l’API, le site affiche le dernier instantané publié. L’exécution quotidienne GitHub Actions nécessite encore la configuration du secret `DATABASE_URL`.
+> Le tableau de bord public interroge l’API en lecture seule hébergée sur Render, connectée à Neon. Le navigateur n’accède jamais directement à la base. En cas d’indisponibilité de l’API, le site affiche le dernier instantané publié.
 
 ## Architecture
 
@@ -93,6 +93,8 @@ Prérequis : Python 3.12 et PostgreSQL accessible.
 ### Tableau de bord GitHub Pages et API Render
 
 Le workflow `.github/workflows/pages.yml` publie le contenu de `site/` sur les changements de `master` ou `main`. GitHub Pages est activé avec **GitHub Actions** comme source ; le site est publié à `https://vaner0.github.io/etl-pipeline/`.
+
+Le `<title>` et la description HTML définissent les métadonnées de la page. Les balises Open Graph (`og:title`, `og:description`, `og:url`) et Twitter Card fournissent explicitement le titre et le résumé pour les aperçus de partage ; elles sont définies dans l’en-tête de `site/index.html`. Après une modification, republier le site et donner un peu de temps aux services de partage pour actualiser leur cache. Certains services, notamment WhatsApp, peuvent conserver un ancien aperçu même quand la page est à jour. Pour demander un aperçu distinct, partager temporairement l’URL avec un paramètre de version, par exemple `https://vaner0.github.io/etl-pipeline/?v=e8084ef`. Cela ne purge pas le cache de l’ancienne URL.
 
 L’API `etl-pipeline-weather-api` est déployée sur Render depuis le `render.yaml` et lit le mart dans Neon. Son URL est configurée dans `site/config.js` (`window.WEATHER_API_BASE_URL`). L’API est en lecture seule, limite CORS à l’origine du tableau de bord et ne renvoie pas la chaîne de connexion. La route `/health` sert au contrôle de disponibilité ; `/api/weather/monthly` renvoie les données. Le parcours public tableau de bord → API Render → Neon a été vérifié le 5 octobre 2026.
 
